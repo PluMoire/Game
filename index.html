@@ -33,6 +33,10 @@
             color: #555;
             font-style: italic;
         }
+        #stats {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
         .correct {
             color: green;
         }
@@ -48,6 +52,10 @@
     <input type="text" id="user-input" placeholder="Entrez la prochaine décimale..." autofocus>
     <div id="feedback"></div>
     <div id="encouragement"></div>
+    <div id="stats">
+        <p>Décimales tapées : <span id="decimal-count">0</span></p>
+        <p>Record : <span id="record">0</span></p>
+    </div>
 
     <script>
         // Les décimales de π (100 premières décimales)
@@ -60,6 +68,8 @@
         const userInputElement = document.getElementById('user-input');
         const feedbackElement = document.getElementById('feedback');
         const encouragementElement = document.getElementById('encouragement');
+        const decimalCountElement = document.getElementById('decimal-count');
+        const recordElement = document.getElementById('record');
 
         // Messages d'encouragement pour Sofiane
         const encouragements = [
@@ -74,6 +84,10 @@
             "Tu es un génie, Sofiane ! 🧠",
             "On dirait que π n'a plus de secrets pour toi ! 🔍"
         ];
+
+        // Récupérer le record depuis le localStorage
+        let record = localStorage.getItem('piRecord') || 0;
+        recordElement.textContent = record;
 
         // Affiche un message d'encouragement aléatoire toutes les 10 secondes
         function showRandomEncouragement() {
@@ -109,6 +123,15 @@
                 currentIndex++;
                 userInputElement.value = "";
                 updateDisplay();
+                decimalCountElement.textContent = currentIndex; // Mettre à jour le compteur de décimales
+
+                // Mettre à jour le record si nécessaire
+                if (currentIndex > record) {
+                    record = currentIndex;
+                    localStorage.setItem('piRecord', record); // Sauvegarder le record dans le localStorage
+                    recordElement.textContent = record;
+                }
+
                 if (currentIndex >= piDecimals.length) {
                     feedbackElement.textContent = "Félicitations, Sofiane ! Tu as mémorisé toutes les décimales de π ! 🎉";
                     userInputElement.disabled = true;
@@ -136,6 +159,7 @@
                     updateDisplay();
                     feedbackElement.textContent = "Recommence depuis le début, Sofiane !";
                     feedbackElement.style.color = "black";
+                    decimalCountElement.textContent = 0; // Réinitialiser le compteur de décimales
                 }, 10000); // 10 secondes
             }
         }
