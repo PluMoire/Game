@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entraînement à la mémorisation de π - Sofiane</title>
+    <title>Entraînement à la mémorisation de π</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,6 +50,26 @@
         #skip-wait:hover {
             background-color: #45a049;
         }
+        #name-input-container {
+            margin-bottom: 20px;
+        }
+        #name-input {
+            font-size: 1.2em;
+            padding: 10px;
+            width: 200px;
+        }
+        #start-button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #start-button:hover {
+            background-color: #45a049;
+        }
         .correct {
             color: green;
         }
@@ -60,16 +80,25 @@
 </head>
 <body>
 
-    <h1>Entraînement à la mémorisation de π - Sofiane</h1>
-    <div id="pi-digits">3.</div>
-    <input type="text" id="user-input" placeholder="Entrez la prochaine décimale..." autofocus>
-    <div id="feedback"></div>
-    <div id="encouragement"></div>
-    <div id="stats">
-        <p>Décimales tapées : <span id="decimal-count">0</span></p>
-        <p>Record : <span id="record">0</span></p>
+    <div id="name-input-container">
+        <h1>Entraînement à la mémorisation de π</h1>
+        <p>Entrez votre prénom pour commencer :</p>
+        <input type="text" id="name-input" placeholder="Votre prénom">
+        <button id="start-button">Commencer</button>
     </div>
-    <button id="skip-wait" style="display: none;">Continuer sans attendre</button>
+
+    <div id="training-container" style="display: none;">
+        <h1>Entraînement à la mémorisation de π - <span id="player-name"></span></h1>
+        <div id="pi-digits">3.</div>
+        <input type="text" id="user-input" placeholder="Entrez la prochaine décimale..." autofocus>
+        <div id="feedback"></div>
+        <div id="encouragement"></div>
+        <div id="stats">
+            <p>Décimales tapées : <span id="decimal-count">0</span></p>
+            <p>Record : <span id="record">0</span></p>
+        </div>
+        <button id="skip-wait" style="display: none;">Continuer sans attendre</button>
+    </div>
 
     <script>
         // Les décimales de π (100 premières décimales)
@@ -77,7 +106,11 @@
         let currentIndex = 0;
         let timeoutId = null;
         let encouragementIntervalId = null;
+        let playerName = "";
 
+        const nameInputContainer = document.getElementById('name-input-container');
+        const trainingContainer = document.getElementById('training-container');
+        const playerNameElement = document.getElementById('player-name');
         const piDigitsElement = document.getElementById('pi-digits');
         const userInputElement = document.getElementById('user-input');
         const feedbackElement = document.getElementById('feedback');
@@ -85,19 +118,21 @@
         const decimalCountElement = document.getElementById('decimal-count');
         const recordElement = document.getElementById('record');
         const skipWaitButton = document.getElementById('skip-wait');
+        const nameInput = document.getElementById('name-input');
+        const startButton = document.getElementById('start-button');
 
-        // Messages d'encouragement pour Sofiane
+        // Messages d'encouragement
         const encouragements = [
-            "Allez Sofiane, tu peux le faire ! 💪",
+            "Allez {name}, tu peux le faire ! 💪",
             "Continue comme ça, champion ! 🏆",
-            "Tu es incroyable, Sofiane ! 😎",
+            "Tu es incroyable, {name} ! 😎",
             "Ne lâche rien, tu es sur la bonne voie ! 🔥",
-            "Sofiane, tu es une machine à retenir π ! 🤖",
+            "{name}, tu es une machine à retenir π ! 🤖",
             "C'est impressionnant, continue ! 🚀",
-            "Tu es en train de battre des records, Sofiane ! 🏅",
-            "Personne ne retient π comme toi, Sofiane ! 🎯",
-            "Tu es un génie, Sofiane ! 🧠",
-            "On dirait que π n'a plus de secrets pour toi ! 🔍"
+            "Tu es en train de battre des records, {name} ! 🏅",
+            "Personne ne retient π comme toi, {name} ! 🎯",
+            "Tu es un génie, {name} ! 🧠",
+            "On dirait que π n'a plus de secrets pour toi, {name} ! 🔍"
         ];
 
         // Récupérer le record depuis le localStorage
@@ -107,7 +142,8 @@
         // Affiche un message d'encouragement aléatoire toutes les 10 secondes
         function showRandomEncouragement() {
             const randomIndex = Math.floor(Math.random() * encouragements.length);
-            encouragementElement.textContent = encouragements[randomIndex];
+            const message = encouragements[randomIndex].replace("{name}", playerName);
+            encouragementElement.textContent = message;
         }
 
         // Met à jour l'affichage des décimales avec des retours à la ligne toutes les 10 décimales
@@ -118,7 +154,7 @@
                     // Décimales correctes en vert
                     displayText += `<span class="correct">${piDecimals[i]}</span>`;
                 } else if (showAll) {
-                    // Afficher les décimales non trouvées en rouge pendant 10 secondes
+                    // Afficher les décimales non trouvées en rouge pendant 30 secondes
                     displayText += `<span class="incorrect">${piDecimals[i]}</span>`;
                 }
                 // Retour à la ligne toutes les 10 décimales
@@ -148,31 +184,31 @@
                 }
 
                 if (currentIndex >= piDecimals.length) {
-                    feedbackElement.textContent = "Félicitations, Sofiane ! Tu as mémorisé toutes les décimales de π ! 🎉";
+                    feedbackElement.textContent = `Félicitations, ${playerName} ! Tu as mémorisé toutes les décimales de π ! 🎉`;
                     userInputElement.disabled = true;
                     clearInterval(encouragementIntervalId);
-                    encouragementElement.textContent = "Tu es un véritable génie de π ! 🌟";
+                    encouragementElement.textContent = `Tu es un véritable génie de π, ${playerName} ! 🌟`;
                 } else {
                     feedbackElement.textContent = "Correct!";
                     feedbackElement.style.color = "green";
                 }
             } else {
-                // Afficher toutes les décimales non trouvées en rouge pendant 10 secondes
+                // Afficher toutes les décimales non trouvées en rouge pendant 30 secondes
                 updateDisplay(true);
-                feedbackElement.textContent = "Nulll, T'es nul Sofiane !!! 😭";
+                feedbackElement.textContent = `Nulll, T'es nul ${playerName} !!! 😭`;
                 feedbackElement.style.color = "red";
 
-                // Désactiver l'entrée pendant 10 secondes
+                // Désactiver l'entrée pendant 30 secondes
                 userInputElement.disabled = true;
 
                 // Afficher le bouton pour sauter l'attente
                 skipWaitButton.style.display = "block";
 
-                // Réinitialiser après 10 secondes
+                // Réinitialiser après 30 secondes
                 if (timeoutId) clearTimeout(timeoutId);
                 timeoutId = setTimeout(() => {
                     resetGame();
-                }, 30000); // 10 secondes
+                }, 30000); // 30 secondes
             }
         }
 
@@ -182,7 +218,7 @@
             userInputElement.value = "";
             userInputElement.disabled = false;
             updateDisplay();
-            feedbackElement.textContent = "Recommence depuis le début, Sofiane !";
+            feedbackElement.textContent = `Recommence depuis le début, ${playerName} !`;
             feedbackElement.style.color = "black";
             decimalCountElement.textContent = 0; // Réinitialiser le compteur de décimales
             skipWaitButton.style.display = "none"; // Cacher le bouton
@@ -190,15 +226,28 @@
 
         // Événement pour le bouton "Continuer sans attendre"
         skipWaitButton.addEventListener('click', () => {
-            clearTimeout(timeoutId); // Annuler le délai de 10 secondes
+            clearTimeout(timeoutId); // Annuler le délai de 30 secondes
             resetGame(); // Réinitialiser le jeu immédiatement
+        });
+
+        // Démarrer l'entraînement après avoir saisi le prénom
+        startButton.addEventListener('click', () => {
+            playerName = nameInput.value.trim();
+            if (playerName) {
+                nameInputContainer.style.display = "none"; // Cacher la saisie du prénom
+                trainingContainer.style.display = "block"; // Afficher l'entraînement
+                playerNameElement.textContent = playerName; // Afficher le prénom dans le titre
+                userInputElement.focus(); // Mettre le focus sur le champ de saisie
+                encouragementIntervalId = setInterval(showRandomEncouragement, 10000); // Changer le message d'encouragement toutes les 10 secondes
+                showRandomEncouragement(); // Afficher un premier message d'encouragement
+            } else {
+                alert("Veuillez entrer votre prénom pour commencer !");
+            }
         });
 
         // Initialisation
         userInputElement.addEventListener('input', checkInput);
         updateDisplay(); // Initialiser l'affichage
-        encouragementIntervalId = setInterval(showRandomEncouragement, 10000); // Changer le message d'encouragement toutes les 10 secondes
-        showRandomEncouragement(); // Afficher un premier message d'encouragement
     </script>
 
 </body>
