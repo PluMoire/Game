@@ -1,733 +1,878 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Entraînement à la mémorisation de π et jeu 2048</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      background-color: #1a1a1a; /* Fond noir */
-      color: #ffffff; /* Texte blanc */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-    }
-    #name-input-container, #training-container, #game-2048-container {
-      background-color: #262626; /* Fond gris foncé */
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); /* Ombre rouge */
-      max-width: 500px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    h1 {
-      font-size: 2.5em;
-      color: #ff4444; /* Rouge vif */
-      margin-bottom: 20px;
-    }
-    p {
-      font-size: 1.2em;
-      color: #cccccc; /* Gris clair */
-    }
-    input[type="text"] {
-      font-size: 1.2em;
-      padding: 10px;
-      width: 80%;
-      margin: 10px 0;
-      border: 2px solid #ff4444; /* Bordure rouge */
-      border-radius: 5px;
-      background-color: #333333; /* Fond gris */
-      color: #ffffff; /* Texte blanc */
-    }
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #ff7777; /* Bordure rouge clair */
-    }
-    button {
-      font-size: 1.2em;
-      padding: 10px 20px;
-      background-color: #ff4444; /* Rouge vif */
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #ff7777; /* Rouge clair */
-    }
-    #pi-digits {
-      font-size: 2em;
-      margin-bottom: 20px;
-      white-space: pre-wrap;
-      color: #ff4444; /* Rouge vif */
-    }
-    #feedback {
-      font-size: 1.2em;
-      margin-top: 20px;
-      color: #ff4444; /* Rouge vif */
-    }
-    #encouragement {
-      font-size: 1.5em;
-      margin-top: 20px;
-      color: #ff7777; /* Rouge clair */
-      font-style: italic;
-    }
-    #stats {
-      font-size: 1.2em;
-      margin-top: 20px;
-      color: #cccccc; /* Gris clair */
-    }
-    #timer-stats p {
-      font-size: 1.2em;
-      color: #cccccc;
-      margin-top: 10px;
-    }
-    .button-container {
-      display: flex;
-      justify-content: center; /* Centre le(s) bouton(s) horizontalement */
-      margin-top: 20px;
-      gap: 10px;
-    }
-    #skip-wait, #choose-decimals, #play-2048, #back-to-100 {
-      display: none; /* Cachés par défaut */
-    }
-    .correct {
-      color: #44ff44; /* Vert */
-    }
-    .incorrect {
-      color: #ff4444; /* Rouge */
-    }
-    #game-2048-container {
-      display: none; /* Caché par défaut */
-    }
-    #game-2048 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .tile {
-      width: 100px;
-      height: 100px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #333333;
-      border-radius: 5px;
-      font-size: 2em;
-      font-weight: bold;
-      color: #ffffff;
-    }
-    /* Couleurs des tuiles en fonction de leur valeur */
-    .tile-2  { background-color: #ff4444; }
-    .tile-4  { background-color: #ff7777; }
-    .tile-8  { background-color: #ffaaaa; }
-    .tile-16 { background-color: #ffdddd; }
-    .tile-32 { background-color: #ffcccc; }
-    .tile-64 { background-color: #ffbbbb; }
-    .tile-128  { background-color: #ff9999; }
-    .tile-256  { background-color: #ff6666; }
-    .tile-512  { background-color: #ff5555; }
-    .tile-1024 { background-color: #ff3333; }
-    .tile-2048 { background-color: #ff0000; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entraînement à la mémorisation de π et jeu 2048</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* Fond noir */
+            color: #ffffff; /* Texte blanc */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        #name-input-container, #training-container, #game-2048-container {
+            background-color: #262626; /* Fond gris foncé */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); /* Ombre rouge */
+            max-width: 500px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #ff4444; /* Rouge vif */
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+            color: #cccccc; /* Gris clair */
+        }
+        input[type="text"] {
+            font-size: 1.2em;
+            padding: 10px;
+            width: 80%;
+            margin: 10px 0;
+            border: 2px solid #ff4444; /* Bordure rouge */
+            border-radius: 5px;
+            background-color: #333333; /* Fond gris */
+            color: #ffffff; /* Texte blanc */
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff7777; /* Bordure rouge clair */
+        }
+        button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            background-color: #ff4444; /* Rouge vif */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #ff7777; /* Rouge clair */
+        }
+        #pi-digits {
+            font-size: 2em;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            color: #ff4444; /* Rouge vif */
+        }
+        #feedback {
+            font-size: 1.2em;
+            margin-top: 20px;
+            color: #ff4444; /* Rouge vif */
+        }
+        #encouragement {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #ff7777; /* Rouge clair */
+            font-style: italic;
+        }
+        #stats {
+            font-size: 1.2em;
+            margin-top: 20px;
+            color: #cccccc; /* Gris clair */
+        }
+        .button-container {
+            display: flex;
+            justify-content: center; 
+            margin-top: 20px;
+            gap: 10px;
+        }
+        #skip-wait, #choose-decimals, #play-2048, #back-to-100 {
+            display: none; /* Cachés par défaut */
+        }
+        .correct {
+            color: #44ff44; /* Vert */
+        }
+        .incorrect {
+            color: #ff4444; /* Rouge */
+        }
+        #game-2048-container {
+            display: none; /* Caché par défaut */
+        }
+        #game-2048 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .tile {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333333;
+            border-radius: 5px;
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        /* Couleurs des tuiles en fonction de leur valeur */
+        .tile-2  { background-color: #ff4444; }
+        .tile-4  { background-color: #ff7777; }
+        .tile-8  { background-color: #ffaaaa; }
+        .tile-16 { background-color: #ffdddd; }
+        .tile-32 { background-color: #ffcccc; }
+        .tile-64 { background-color: #ffbbbb; }
+        .tile-128  { background-color: #ff9999; }
+        .tile-256  { background-color: #ff6666; }
+        .tile-512  { background-color: #ff5555; }
+        .tile-1024 { background-color: #ff3333; }
+        .tile-2048 { background-color: #ff0000; }
 
-    /* Texte "P!erre" en bas à droite, très peu visible */
-    #secret-signature {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      color: #fff;
-      font-size: 14px;
-      opacity: 0.05; /* Très faible opacité */
-      z-index: 9999;
-    }
-  </style>
+        /* Petit texte "P!erre" en bas à droite, très peu visible */
+        #secret-signature {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #fff;
+            font-size: 14px;
+            opacity: 0.05; /* Très faible opacité */
+            z-index: 9999;
+        }
+
+        /* Pour afficher le temps du nouvel objectif */
+        #timer-stats-for-other, #record-other-container {
+            margin-top: 15px;
+            color: #cccccc;
+            font-size: 1.2em;
+            display: none; /* Cachés tant qu'on n'a pas choisi */
+        }
+    </style>
 </head>
 <body>
 
-  <div id="name-input-container">
-    <h1>Entraînement à la mémorisation de π</h1>
-    <p>Entrez votre prénom pour commencer :</p>
-    <input type="text" id="name-input" placeholder="Votre prénom">
-    <button id="start-button">Commencer</button>
-  </div>
-
-  <div id="training-container" style="display: none;">
-    <h1>Entraînement à la mémorisation de π - <span id="player-name"></span></h1>
-    <div id="pi-digits">3.</div>
-    <input type="text" id="user-input" placeholder="Entrez la prochaine décimale..." autofocus>
-    <div id="feedback"></div>
-    <div id="encouragement"></div>
-
-    <div id="stats">
-      <p>Décimales tapées : <span id="decimal-count">0</span></p>
-      <p>Record : <span id="record">0</span></p>
+    <div id="name-input-container">
+        <h1>Entraînement à la mémorisation de π</h1>
+        <p>Entrez votre prénom pour commencer :</p>
+        <input type="text" id="name-input" placeholder="Votre prénom">
+        <button id="start-button">Commencer</button>
     </div>
 
-    <!-- Zone d'affichage des informations de temps -->
-    <div id="timer-stats">
-      <p>Temps pour 100 décimales (live) : <span id="time-100-dec">-</span></p>
-      <p>Record de vitesse pour 100 décimales : <span id="best-time-100">-</span></p>
-      <p>Moyenne de décimales/s : <span id="avg-dec-per-sec">-</span></p>
+    <div id="training-container" style="display: none;">
+        <h1>Entraînement à la mémorisation de π - <span id="player-name"></span></h1>
+        <div id="pi-digits">3.</div>
+        <input type="text" id="user-input" placeholder="Entrez la prochaine décimale..." autofocus>
+        <div id="feedback"></div>
+        <div id="encouragement"></div>
+
+        <div id="stats">
+            <!-- Statistiques classiques pour l'entraînement initial (100 déc) -->
+            <p>Décimales tapées : <span id="decimal-count">0</span></p>
+            <p>Record (total de décimales tapées) : <span id="record">0</span></p>
+
+            <!-- Timer / record pour 100 décimales -->
+            <p>Temps pour 100 décimales : <span id="time-100-dec">-</span></p>
+            <p>Record de vitesse pour 100 décimales : <span id="best-time-100">-</span></p>
+            <p>Moyenne de décimales/s : <span id="avg-dec-per-sec">-</span></p>
+        </div>
+
+        <!-- Quand on aura choisi un nouvel objectif, on affichera aussi ces zones : -->
+        <div id="timer-stats-for-other">
+            <p>Objectif : <span id="other-goal-value"></span> déc</p>
+            <p>Temps (live) : <span id="other-time-span">-</span> s</p>
+            <p>Moyenne : <span id="other-avg-span">-</span> déc/s</p>
+        </div>
+        <div id="record-other-container">
+            <p>Record pour <span id="record-other-goal"></span> déc : <span id="record-other-value">-</span> s</p>
+        </div>
+
+        <div class="button-container">
+            <button id="skip-wait">Continuer sans attendre</button>
+        </div>
+
+        <div class="button-container">
+            <button id="choose-decimals">Choisir un nombre de décimales</button>
+            <button id="play-2048">Jouer à 2048</button>
+            <button id="back-to-100">Refaire 100 décimales</button>
+        </div>
     </div>
 
-    <div class="button-container">
-      <button id="skip-wait">Continuer sans attendre</button>
+    <div id="game-2048-container">
+        <h1>Jeu 2048</h1>
+        <div id="game-2048"></div>
+        <button id="restart-2048">Recommencer</button>
     </div>
-    <!-- 3 boutons en bas : choisir décimales, jouer 2048, retour à 100 -->
-    <div class="button-container">
-      <button id="choose-decimals">Choisir un nombre de décimales</button>
-      <button id="play-2048">Jouer à 2048</button>
-      <button id="back-to-100">Refaire 100 décimales</button>
-    </div>
-  </div>
 
-  <div id="game-2048-container">
-    <h1>Jeu 2048</h1>
-    <div id="game-2048"></div>
-    <button id="restart-2048">Recommencer</button>
-  </div>
+    <!-- Petit texte "P!erre" -->
+    <div id="secret-signature">P!erre</div>
 
-  <!-- Le petit texte "P!erre" en bas à droite, presque invisible -->
-  <div id="secret-signature">P!erre</div>
+    <script>
+        /* ==============================
+            Décimales de PI (999)
+        ============================== */
+        const piDecimals = 
+            "1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679" +
+            "8214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196" +
+            "4428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273" +
+            "7245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094" +
+            "3305727036575959195309218611738193261179310511854807446237996274956735188575272489122793818301194912" +
+            "9833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132" +
+            "0005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235" +
+            "4201995611212902196086403441815981362977477130996051870721134999999837297804995105973173281609631859" +
+            "5024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303" +
+            "5982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989" +
+            "3809525720106548586327886593615338182796823030195203530185296899577362259941389124972177528347913151" +
+            "5574857242454150695950829533116861727855889075098381754637464939319255060400927701671139009848824012" +
+            "8583616035637076601047101819429555961989467678374494482553797747268471040475346462080466842590694912" +
+            "9331367702898915210475216205696602405803815019351125338243003558764024749647326391419927260426992279" +
+            "6782354781636009341721641219924586315030286182974555706749838505494588586926995690927210797509302955" +
+            "3211653449872027559602364806654991198818347977535663698074265425278625518184175746728909777727938000" +
+            "8164706001614524919217321721477235014144197356854816136115735255213347574184946843852332390739414333" +
+            "4547762416862518983569485562099219222184272550254256887671790494601653466804988627232791786085784383" +
+            "8279679766814541009538837863609506800642251252051173929848960841284886269456042419652850222106611863" +
+            "0674427862203919494504712371378696095636437191728746776465757396241389086583264599581339047802759009";
 
-  <script>
-    // Les décimales de π (999 premières décimales)
-    const piDecimals = "1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679" +
-                      "8214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196" +
-                      "4428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273" +
-                      "7245870066063155881748815209209628292540917153643678925903600113305305488204665213841469519415116094" +
-                      "3305727036575959195309218611738193261179310511854807446237996274956735188575272489122793818301194912" +
-                      "9833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132" +
-                      "0005681271452635608277857713427577896091736371787214684409012249534301465495853710507922796892589235" +
-                      "4201995611212902196086403441815981362977477130996051870721134999999837297804995105973173281609631859" +
-                      "5024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303" +
-                      "5982534904287554687311595628638823537875937519577818577805321712268066130019278766111959092164201989" +
-                      "3809525720106548586327886593615338182796823030195203530185296899577362259941389124972177528347913151" +
-                      "5574857242454150695950829533116861727855889075098381754637464939319255060400927701671139009848824012" +
-                      "8583616035637076601047101819429555961989467678374494482553797747268471040475346462080466842590694912" +
-                      "9331367702898915210475216205696602405803815019351125338243003558764024749647326391419927260426992279" +
-                      "6782354781636009341721641219924586315030286182974555706749838505494588586926995690927210797509302955" +
-                      "3211653449872027559602364806654991198818347977535663698074265425278625518184175746728909777727938000" +
-                      "8164706001614524919217321721477235014144197356854816136115735255213347574184946843852332390739414333" +
-                      "4547762416862518983569485562099219222184272550254256887671790494601653466804988627232791786085784383" +
-                      "8279679766814541009538837863609506800642251252051173929848960841284886269456042419652850222106611863" +
-                      "0674427862203919494504712371378696095636437191728746776465757396241389086583264599581339047802759009";
+        /* ==============================
+            Variables globales
+        ============================== */
+        let currentIndex = 0;
+        let playerName   = "";
+        let maxDecimals  = 100;  // On commence par 100
+        let isFirst100Done  = false; // Pour savoir si on a déjà réussi 100 décimales
+        let startTime    = null; // timer pour 100
+        let endTime      = null;
+        let encouragementIntervalId = null;
+        let timeUpdateIntervalId    = null; 
+        let timeoutId    = null;  // pénalité
 
-    // Variables liées aux décimales
-    let currentIndex = 0;    // Position actuelle dans piDecimals
-    let timeoutId = null;    // ID du setTimeout pour la pénalité de 30s
-    let encouragementIntervalId = null;
-    let timeUpdateIntervalId = null; // Interval pour rafraîchir le temps toutes les 0,1s
-    let playerName = "";
-    let maxDecimals = 100;   // Par défaut 100
+        // Pour la partie "autres objectifs"
+        let otherGoal        = null;   // Si l’utilisateur choisit un objectif différent de 100
+        let otherStartTime   = null; 
+        let otherIndex       = 0;      // progress sur l’objectif "autre"
+        let otherIntervalId  = null;   // interval pour MàJ live
+        let otherEndTime     = null;
+        let otherGoalDone    = false;  // a-t-on terminé l'objectif ?
 
-    // Timer spécifique pour les 100 premières décimales
-    let startTime = null;    // Démarre quand on tape la 1re décimale correcte
-    let endTime = null;      // Se cale quand on atteint la 100e décimale
-    let bestTime100 = localStorage.getItem('bestTime100') || null;
-
-    const nameInputContainer = document.getElementById('name-input-container');
-    const trainingContainer = document.getElementById('training-container');
-    const game2048Container = document.getElementById('game-2048-container');
-    const playerNameElement = document.getElementById('player-name');
-    const piDigitsElement = document.getElementById('pi-digits');
-    const userInputElement = document.getElementById('user-input');
-    const feedbackElement = document.getElementById('feedback');
-    const encouragementElement = document.getElementById('encouragement');
-    const decimalCountElement = document.getElementById('decimal-count');
-    const recordElement = document.getElementById('record');
-    const skipWaitButton = document.getElementById('skip-wait');
-    const chooseDecimalsButton = document.getElementById('choose-decimals');
-    const play2048Button = document.getElementById('play-2048');
-    const backTo100Button = document.getElementById('back-to-100'); // NOUVEAU bouton
-    const nameInput = document.getElementById('name-input');
-    const startButton = document.getElementById('start-button');
-    const game2048Element = document.getElementById('game-2048');
-    const restart2048Button = document.getElementById('restart-2048');
-
-    // Éléments d'affichage du temps
-    const time100DecSpan = document.getElementById('time-100-dec');
-    const bestTime100Span = document.getElementById('best-time-100');
-    const avgDecPerSecSpan = document.getElementById('avg-dec-per-sec');
-
-    // Messages d'encouragement
-    const encouragements = [
-      "Allez {name}, tu peux le faire ! 💪",
-      "Continue comme ça, champion ! 🏆",
-      "Tu es incroyable, {name} ! 😎",
-      "Ne lâche rien, tu es sur la bonne voie ! 🔥",
-      "{name}, tu es une machine à retenir π ! 🤖",
-      "C'est impressionnant, continue ! 🚀",
-      "Tu es en train de battre des records, {name} ! 🏅",
-      "Personne ne retient π comme toi, {name} ! 🎯",
-      "Tu es un génie, {name} ! 🧠",
-      "On dirait que π n'a plus de secrets pour toi, {name} ! 🔍"
-    ];
-
-    // Récupérer le record global de décimales depuis le localStorage
-    let record = localStorage.getItem('piRecord') || 0;
-    recordElement.textContent = record;
-
-    // Affiche un message d'encouragement aléatoire toutes les 10 secondes
-    function showRandomEncouragement() {
-      const randomIndex = Math.floor(Math.random() * encouragements.length);
-      const message = encouragements[randomIndex].replace("{name}", playerName);
-      encouragementElement.textContent = message;
-    }
-
-    // Met à jour l'affichage des décimales
-    // showAll = true => afficher en rouge les décimales restantes
-    function updateDisplay(showAll = false) {
-      let displayText = "3."; // Commence avec "3."
-      for (let i = 0; i < maxDecimals; i++) {
-        if (i < currentIndex) {
-          // Décimales correctes en vert
-          displayText += `<span class="correct">${piDecimals[i]}</span>`;
-        } else if (showAll) {
-          // Décimales non trouvées en rouge
-          displayText += `<span class="incorrect">${piDecimals[i]}</span>`;
+        // Enregistrement des records "par objectif" dans localStorage
+        // On y stockera { "10": temps, "50": temps, ... }
+        function loadRecords() {
+            const data = localStorage.getItem("recordsTimesByGoal");
+            return data ? JSON.parse(data) : {};
         }
-        // Retour à la ligne toutes les 10 décimales
-        if ((i + 1) % 10 === 0 && i !== maxDecimals - 1) {
-          displayText += "\n";
+        function saveRecords(obj) {
+            localStorage.setItem("recordsTimesByGoal", JSON.stringify(obj));
         }
-      }
-      piDigitsElement.innerHTML = displayText;
-    }
+        let recordsTimesByGoal = loadRecords();
 
-    // =============== TIMER toutes les 0,1 s ===============
-    // Lance la mise à jour continue du temps et de la moyenne (si pas déjà lancée)
-    function startLiveTimer() {
-      if (!timeUpdateIntervalId) {
-        timeUpdateIntervalId = setInterval(() => {
-          if (startTime !== null) {
-            // Durée depuis le début
-            const now = Date.now();
-            const elapsedSec = (now - startTime) / 1000; // en secondes
-            // On affiche ce temps en direct
-            time100DecSpan.textContent = elapsedSec.toFixed(2) + "s";
+        // Sélecteurs
+        const nameInputContainer  = document.getElementById('name-input-container');
+        const nameInput           = document.getElementById('name-input');
+        const startButton         = document.getElementById('start-button');
+        const trainingContainer   = document.getElementById('training-container');
+        const game2048Container   = document.getElementById('game-2048-container');
+        const game2048Element     = document.getElementById('game-2048');
+        const restart2048Button   = document.getElementById('restart-2048');
 
-            // Calculer la moyenne en direct (nb décimales déjà validées)
-            if (elapsedSec > 0) {
-              const avg = currentIndex / elapsedSec;
-              avgDecPerSecSpan.textContent = avg.toFixed(2);
+        const playerNameElement   = document.getElementById('player-name');
+        const piDigitsElement     = document.getElementById('pi-digits');
+        const userInputElement    = document.getElementById('user-input');
+        const feedbackElement     = document.getElementById('feedback');
+        const encouragementElement= document.getElementById('encouragement');
+        const decimalCountElement = document.getElementById('decimal-count');
+        const recordElement       = document.getElementById('record');
+
+        const skipWaitButton      = document.getElementById('skip-wait');
+        const chooseDecimalsButton= document.getElementById('choose-decimals');
+        const play2048Button      = document.getElementById('play-2048');
+        const backTo100Button     = document.getElementById('back-to-100');
+
+        // Stats 100
+        const time100DecSpan      = document.getElementById('time-100-dec');
+        const bestTime100Span     = document.getElementById('best-time-100');
+        const avgDecPerSecSpan    = document.getElementById('avg-dec-per-sec');
+
+        // Stats "autre objectif"
+        const timerStatsForOther     = document.getElementById('timer-stats-for-other');
+        const recordOtherContainer   = document.getElementById('record-other-container');
+        const otherGoalValueSpan     = document.getElementById('other-goal-value');
+        const otherTimeSpan          = document.getElementById('other-time-span');
+        const otherAvgSpan           = document.getElementById('other-avg-span');
+        const recordOtherGoalSpan    = document.getElementById('record-other-goal');
+        const recordOtherValueSpan   = document.getElementById('record-other-value');
+
+        // Record global (tout objectif confondu) pour "nombre total de décimales" :
+        let recordGlobal = localStorage.getItem('piRecord') || 0;
+        recordElement.textContent = recordGlobal;
+
+        // Record de temps pour 100 déc :
+        let bestTime100 = localStorage.getItem('bestTime100') || null;
+        if (bestTime100) {
+            bestTime100Span.textContent = parseFloat(bestTime100).toFixed(2);
+        }
+
+        // Encouragements
+        const encouragements = [
+            "Allez {name}, tu peux le faire ! 💪",
+            "Continue comme ça, champion ! 🏆",
+            "Tu es incroyable, {name} ! 😎",
+            "Ne lâche rien, tu es sur la bonne voie ! 🔥",
+            "{name}, tu es une machine à retenir π ! 🤖",
+            "C'est impressionnant, continue ! 🚀",
+            "Tu es en train de battre des records, {name} ! 🏅",
+            "Personne ne retient π comme toi, {name} ! 🎯",
+            "Tu es un génie, {name} ! 🧠",
+            "On dirait que π n'a plus de secrets pour toi, {name} ! 🔍"
+        ];
+        function showRandomEncouragement() {
+            const i = Math.floor(Math.random() * encouragements.length);
+            encouragementElement.textContent = encouragements[i].replace("{name}", playerName);
+        }
+
+        /* ============================
+             FONCTIONS PRINCIPALES
+        ============================ */
+
+        // Mise à jour de l'affichage principal (100 déc)
+        function updateDisplay(showAll = false) {
+            let displayText = "3.";
+            for (let i = 0; i < 100; i++) {
+                if (i < currentIndex) {
+                    displayText += `<span class="correct">${piDecimals[i]}</span>`;
+                } else if (showAll) {
+                    displayText += `<span class="incorrect">${piDecimals[i]}</span>`;
+                }
+                if ((i + 1) % 10 === 0 && i !== 99) {
+                    displayText += "\n";
+                }
             }
-          }
-        }, 100); // toutes les 0,1 s
-      }
-    }
-
-    // Stoppe la mise à jour continue
-    function stopLiveTimer() {
-      if (timeUpdateIntervalId) {
-        clearInterval(timeUpdateIntervalId);
-        timeUpdateIntervalId = null;
-      }
-    }
-
-    // Vérifie la saisie de l'utilisateur
-    function checkInput() {
-      const userInput = userInputElement.value;
-      const correctDecimal = piDecimals[currentIndex];
-
-      if (userInput === correctDecimal) {
-        // Si c'est la première décimale correcte et qu'on vise 100
-        if (currentIndex === 0 && maxDecimals === 100) {
-          startTime = Date.now();  // On fixe le temps de départ
-          startLiveTimer();        // On met à jour le timer en continu
+            piDigitsElement.innerHTML = displayText;
         }
 
-        currentIndex++;
-        userInputElement.value = "";
-        updateDisplay();
-        decimalCountElement.textContent = currentIndex; // Mettre à jour le compteur
-
-        // Mettre à jour le record global si nécessaire
-        if (currentIndex > record) {
-          record = currentIndex;
-          localStorage.setItem('piRecord', record);
-          recordElement.textContent = record;
+        // Mise à jour de l'affichage "autre objectif"
+        // si on a choisi par ex. 20 décimales
+        function updateDisplayOther(showAll = false) {
+            let text = "3.";
+            for (let i = 0; i < otherGoal; i++) {
+                if (i < otherIndex) {
+                    text += `<span class="correct">${piDecimals[i]}</span>`;
+                } else if (showAll) {
+                    text += `<span class="incorrect">${piDecimals[i]}</span>`;
+                }
+                if ((i + 1) % 10 === 0 && i !== otherGoal - 1) {
+                    text += "\n";
+                }
+            }
+            piDigitsElement.innerHTML = text;
         }
 
-        // Si on a atteint l'objectif
-        if (currentIndex >= maxDecimals) {
-          feedbackElement.textContent = `Félicitations, ${playerName} ! Tu as mémorisé ${maxDecimals} décimales de π ! 🎉`;
-          userInputElement.disabled = true;
-          clearInterval(encouragementIntervalId);
-          encouragementElement.textContent = `Tu es un véritable génie de π, ${playerName} ! 🌟`;
+        // Timer "live" (pour 100 déc)
+        function startLiveTimer100() {
+            stopLiveTimer100();
+            timeUpdateIntervalId = setInterval(() => {
+                if (startTime !== null && currentIndex > 0 && currentIndex < 100) {
+                    const now = Date.now();
+                    const elapsed = (now - startTime) / 1000;
+                    time100DecSpan.textContent = elapsed.toFixed(2) + "s";
 
-          // =========================
-          // Arrêt du timer si c'était 100
-          // =========================
-          if (maxDecimals === 100 && startTime !== null) {
+                    const avg = currentIndex / elapsed;
+                    avgDecPerSecSpan.textContent = avg.toFixed(2);
+                }
+            }, 100);
+        }
+        function stopLiveTimer100() {
+            if (timeUpdateIntervalId) {
+                clearInterval(timeUpdateIntervalId);
+                timeUpdateIntervalId = null;
+            }
+        }
+
+        // Timer "live" (pour l'objectif "autre")
+        function startLiveTimerOther() {
+            stopLiveTimerOther();
+            otherIntervalId = setInterval(() => {
+                if (otherStartTime !== null && otherIndex > 0 && otherIndex < otherGoal) {
+                    const now = Date.now();
+                    const elapsed = (now - otherStartTime) / 1000;
+                    otherTimeSpan.textContent = elapsed.toFixed(2);
+
+                    const avg = otherIndex / elapsed;
+                    otherAvgSpan.textContent = avg.toFixed(2);
+                }
+            }, 100);
+        }
+        function stopLiveTimerOther() {
+            if (otherIntervalId) {
+                clearInterval(otherIntervalId);
+                otherIntervalId = null;
+            }
+        }
+
+        // Reset (100 déc)
+        function resetGame() {
+            currentIndex = 0;
+            userInputElement.value = "";
+            userInputElement.disabled = false;
+            updateDisplay();
+            feedbackElement.textContent = `Recommence depuis le début, ${playerName} !`;
+            feedbackElement.style.color = "#cccccc";
+            decimalCountElement.textContent = 0;
+            skipWaitButton.style.display = "none";
+            stopLiveTimer100();
+            startTime = null;
+            endTime = null;
+            time100DecSpan.textContent   = "-";
+            avgDecPerSecSpan.textContent = "-";
+        }
+
+        // Reset (autre objectif)
+        function resetOtherGoal() {
+            otherIndex     = 0;
+            userInputElement.value = "";
+            userInputElement.disabled = false;
+            feedbackElement.textContent = `Recommence (objectif ${otherGoal} décimales) !`;
+            feedbackElement.style.color = "#cccccc";
+            skipWaitButton.style.display = "none";
+            stopLiveTimerOther();
+            otherStartTime = null;
+            otherEndTime   = null;
+            otherTimeSpan.textContent = "-";
+            otherAvgSpan.textContent  = "-";
+            otherGoalDone  = false;
+            updateDisplayOther();
+        }
+
+        // Démarrage
+        startButton.addEventListener('click', () => {
+            playerName = nameInput.value.trim();
+            if (!playerName) {
+                alert("Veuillez entrer un prénom !");
+                return;
+            }
+            nameInputContainer.style.display = "none";
+            trainingContainer.style.display = "block";
+            playerNameElement.textContent = playerName;
+            userInputElement.focus();
+
+            // Encouragements toutes les 10s
+            showRandomEncouragement();
+            encouragementIntervalId = setInterval(showRandomEncouragement, 10000);
+        });
+
+        // Contrôle d'entrée
+        userInputElement.addEventListener('input', checkInput);
+
+        function checkInput() {
+            const val = userInputElement.value;
+            if (!val) return;
+
+            // Cas 1 : on est en mode "100 déc" par défaut (ou a réinitialisé sur 100)
+            if (!otherGoal) {
+                checkInput100(val);
+            }
+            // Cas 2 : on est en mode "autre objectif"
+            else {
+                checkInputOther(val);
+            }
+        }
+
+        // Vérifier pour 100 déc
+        function checkInput100(userVal) {
+            const correct = piDecimals[currentIndex];
+            if (userVal === correct) {
+                // Première décimale correcte
+                if (currentIndex === 0) {
+                    startTime = Date.now();
+                    startLiveTimer100();
+                }
+                currentIndex++;
+                userInputElement.value = "";
+                updateDisplay();
+                decimalCountElement.textContent = currentIndex;
+                // Record global
+                if (currentIndex > recordGlobal) {
+                    recordGlobal = currentIndex;
+                    localStorage.setItem('piRecord', recordGlobal);
+                    recordElement.textContent = recordGlobal;
+                }
+                if (currentIndex >= 100) {
+                    // Succès 100
+                    finish100();
+                } else {
+                    feedbackElement.textContent = "Correct!";
+                    feedbackElement.style.color = "#44ff44";
+                }
+            } else {
+                // Faux
+                updateDisplay(true);
+                feedbackElement.textContent = `Nulll, T'es nul ${playerName} !!! 😭`;
+                feedbackElement.style.color = "#ff4444";
+                userInputElement.disabled = true;
+                skipWaitButton.style.display = "block";
+                stopLiveTimer100();
+                if (timeoutId) clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    resetGame();
+                }, 30000);
+            }
+        }
+
+        // Fin 100 déc
+        function finish100() {
+            userInputElement.disabled = true;
+            clearInterval(encouragementIntervalId);
+            encouragementElement.textContent = `Tu es un véritable génie de π, ${playerName} ! 🌟`;
+            feedbackElement.textContent = `Félicitations, ${playerName} ! 100 décimales mémorisées ! 🎉`;
+            stopLiveTimer100();
             endTime = Date.now();
-            stopLiveTimer(); // On arrête la mise à jour "live"
-
-            const totalTimeSecs = (endTime - startTime) / 1000;
-            time100DecSpan.textContent = totalTimeSecs.toFixed(2) + "s";
-
-            // On recalcule la moyenne finale
-            const avg = 100 / totalTimeSecs;
+            const totalSec = (endTime - startTime) / 1000;
+            time100DecSpan.textContent = totalSec.toFixed(2) + "s";
+            const avg = 100 / totalSec;
             avgDecPerSecSpan.textContent = avg.toFixed(2);
 
-            // Mise à jour du record de temps si c'est le meilleur
-            if (!bestTime100 || totalTimeSecs < parseFloat(bestTime100)) {
-              bestTime100 = totalTimeSecs;
-              localStorage.setItem('bestTime100', bestTime100);
+            // Màj record 100 si meilleur
+            if (!bestTime100 || totalSec < parseFloat(bestTime100)) {
+                bestTime100 = totalSec;
+                localStorage.setItem('bestTime100', bestTime100);
             }
-            if (bestTime100) {
-              bestTime100Span.textContent = parseFloat(bestTime100).toFixed(2) + "s";
-            }
+            bestTime100Span.textContent = parseFloat(bestTime100).toFixed(2);
 
-            // Ici, on fait apparaître les 3 boutons (dont le nouveau)
+            // On affiche les 2 (ou 3) boutons
             chooseDecimalsButton.style.display = "block";
             play2048Button.style.display = "block";
             backTo100Button.style.display = "block";
-          }
-          else {
-            // Pour un autre nombre de décimales (101-999)
-            chooseDecimalsButton.style.display = "block";
-          }
-          return;
+
+            // On marque qu'on a terminé 100
+            isFirst100Done = true;
         }
 
-        // Sinon, simple feedback correct
-        feedbackElement.textContent = "Correct!";
-        feedbackElement.style.color = "#44ff44"; // Vert
-      } else {
-        // Mauvaise décimale
-        updateDisplay(true);
-        feedbackElement.textContent = `Nulll, T'es nul ${playerName} !!! 😭`;
-        feedbackElement.style.color = "#ff4444";
-
-        // Désactiver l'entrée pendant 30 secondes
-        userInputElement.disabled = true;
-        skipWaitButton.style.display = "block";
-
-        // Réinitialiser après 30 secondes
-        if (timeoutId) clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          resetGame();
-        }, 30000);
-      }
-    }
-
-    // Réinitialiser le jeu
-    function resetGame() {
-      currentIndex = 0;
-      userInputElement.value = "";
-      userInputElement.disabled = false;
-      updateDisplay();
-      feedbackElement.textContent = `Recommence depuis le début, ${playerName} !`;
-      feedbackElement.style.color = "#cccccc";
-      decimalCountElement.textContent = 0;
-      skipWaitButton.style.display = "none";
-
-      // Si on était en mode 100, on arrête le timer "live"
-      if (maxDecimals === 100) {
-        stopLiveTimer();
-        startTime = null;
-        endTime = null;
-        // On réinitialise l'affichage "live"
-        time100DecSpan.textContent = "-";
-        avgDecPerSecSpan.textContent = "-";
-      }
-    }
-
-    // Bouton "Continuer sans attendre"
-    skipWaitButton.addEventListener("click", () => {
-      clearTimeout(timeoutId);
-      resetGame();
-    });
-
-    // Bouton "Choisir un nombre de décimales"
-    chooseDecimalsButton.addEventListener("click", () => {
-      const newMaxDecimals = prompt("Choisissez un nombre de décimales à mémoriser (entre 101 et 999) :");
-      if (newMaxDecimals && !isNaN(newMaxDecimals) && newMaxDecimals >= 101 && newMaxDecimals <= 999) {
-        maxDecimals = parseInt(newMaxDecimals, 10);
-        resetGame();
-        chooseDecimalsButton.style.display = "none";
-        play2048Button.style.display = "none";
-        backTo100Button.style.display = "none"; // cacher aussi le bouton "Retour à 100"
-        userInputElement.focus();
-      } else {
-        alert("Veuillez entrer un nombre valide entre 101 et 999.");
-      }
-    });
-
-    // Bouton "Retour à 100 décimales" (nouveau)
-    backTo100Button.addEventListener("click", () => {
-      // On repasse à 100
-      maxDecimals = 100;
-      // On réinitialise
-      resetGame();
-      // Réafficher la zone training
-      trainingContainer.style.display = "block";
-      // Cacher le container du jeu 2048 s'il était visible
-      game2048Container.style.display = "none";
-      // Cacher le bouton "Retour à 100" lui-même
-      backTo100Button.style.display = "none";
-      // Cacher les autres si besoin
-      chooseDecimalsButton.style.display = "none";
-      play2048Button.style.display = "none";
-      userInputElement.focus();
-    });
-
-    // Démarrer l'entraînement après avoir saisi le prénom
-    startButton.addEventListener("click", () => {
-      playerName = nameInput.value.trim();
-      if (playerName) {
-        nameInputContainer.style.display = "none";
-        trainingContainer.style.display = "block";
-        playerNameElement.textContent = playerName;
-        userInputElement.focus();
-        encouragementIntervalId = setInterval(showRandomEncouragement, 10000);
-        showRandomEncouragement(); // Premier message
-
-        // Afficher le record de vitesse 100 décimales si déjà existant
-        if (bestTime100) {
-          bestTime100Span.textContent = parseFloat(bestTime100).toFixed(2) + "s";
-        }
-      } else {
-        alert("Veuillez entrer votre prénom pour commencer !");
-      }
-    });
-
-    // Initialisation
-    userInputElement.addEventListener("input", checkInput);
-    updateDisplay();
-
-    // ================== LOGIQUE DU JEU 2048 ==================
-    let board = [];
-    const size = 4;
-
-    function init2048() {
-      board = Array.from({ length: size }, () => Array(size).fill(0));
-      addRandomTile();
-      addRandomTile();
-      render2048();
-    }
-
-    function addRandomTile() {
-      const emptyTiles = [];
-      for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-          if (board[i][j] === 0) {
-            emptyTiles.push({ x: i, y: j });
-          }
-        }
-      }
-      if (emptyTiles.length > 0) {
-        const { x, y } = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
-        board[x][y] = Math.random() < 0.9 ? 2 : 4;
-      }
-    }
-
-    function render2048() {
-      game2048Element.innerHTML = "";
-      for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-          const tile = document.createElement("div");
-          tile.className = `tile tile-${board[i][j]}`;
-          tile.textContent = board[i][j] === 0 ? "" : board[i][j];
-          game2048Element.appendChild(tile);
-        }
-      }
-    }
-
-    // Fonction pour déplacer les tuiles
-    function move(direction) {
-      let moved = false;
-      if (direction === "left") {
-        for (let i = 0; i < size; i++) {
-          for (let j = 0; j < size - 1; j++) {
-            if (board[i][j] === 0) {
-              for (let k = j + 1; k < size; k++) {
-                if (board[i][k] !== 0) {
-                  board[i][j] = board[i][k];
-                  board[i][k] = 0;
-                  moved = true;
-                  break;
+        // Vérifier pour "autre objectif"
+        function checkInputOther(userVal) {
+            const correct = piDecimals[otherIndex];
+            if (userVal === correct) {
+                if (otherIndex === 0) {
+                    otherStartTime = Date.now();
+                    startLiveTimerOther();
                 }
-              }
-            }
-            if (board[i][j] !== 0) {
-              for (let k = j + 1; k < size; k++) {
-                if (board[i][k] === board[i][j]) {
-                  board[i][j] *= 2;
-                  board[i][k] = 0;
-                  moved = true;
-                  break;
-                } else if (board[i][k] !== 0) {
-                  break;
-                }
-              }
-            }
-          }
-        }
-      } else if (direction === "right") {
-        for (let i = 0; i < size; i++) {
-          for (let j = size - 1; j > 0; j--) {
-            if (board[i][j] === 0) {
-              for (let k = j - 1; k >= 0; k--) {
-                if (board[i][k] !== 0) {
-                  board[i][j] = board[i][k];
-                  board[i][k] = 0;
-                  moved = true;
-                  break;
-                }
-              }
-            }
-            if (board[i][j] !== 0) {
-              for (let k = j - 1; k >= 0; k--) {
-                if (board[i][k] === board[i][j]) {
-                  board[i][j] *= 2;
-                  board[i][k] = 0;
-                  moved = true;
-                  break;
-                } else if (board[i][k] !== 0) {
-                  break;
-                }
-              }
-            }
-          }
-        }
-      } else if (direction === "up") {
-        for (let j = 0; j < size; j++) {
-          for (let i = 0; i < size - 1; i++) {
-            if (board[i][j] === 0) {
-              for (let k = i + 1; k < size; k++) {
-                if (board[k][j] !== 0) {
-                  board[i][j] = board[k][j];
-                  board[k][j] = 0;
-                  moved = true;
-                  break;
-                }
-              }
-            }
-            if (board[i][j] !== 0) {
-              for (let k = i + 1; k < size; k++) {
-                if (board[k][j] === board[i][j]) {
-                  board[i][j] *= 2;
-                  board[k][j] = 0;
-                  moved = true;
-                  break;
-                } else if (board[k][j] !== 0) {
-                  break;
-                }
-              }
-            }
-          }
-        }
-      } else if (direction === "down") {
-        for (let j = 0; j < size; j++) {
-          for (let i = size - 1; i > 0; i--) {
-            if (board[i][j] === 0) {
-              for (let k = i - 1; k >= 0; k--) {
-                if (board[k][j] !== 0) {
-                  board[i][j] = board[k][j];
-                  board[k][j] = 0;
-                  moved = true;
-                  break;
-                }
-              }
-            }
-            if (board[i][j] !== 0) {
-              for (let k = i - 1; k >= 0; k--) {
-                if (board[k][j] === board[i][j]) {
-                  board[i][j] *= 2;
-                  board[k][j] = 0;
-                  moved = true;
-                  break;
-                } else if (board[k][j] !== 0) {
-                  break;
-                }
-              }
-            }
-          }
-        }
-      }
-      if (moved) {
-        addRandomTile();
-        render2048();
-        checkWin();
-      }
-    }
+                otherIndex++;
+                userInputElement.value = "";
+                updateDisplayOther();
 
-    // Vérifie si on a atteint la tuile 4096
-    function checkWin() {
-      for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-          if (board[i][j] === 4096) {
-            displayBigMessage();
-            return;
-          }
+                if (otherIndex >= otherGoal) {
+                    finishOtherGoal();
+                } else {
+                    feedbackElement.textContent = "Correct!";
+                    feedbackElement.style.color = "#44ff44";
+                }
+            } else {
+                // Faux
+                updateDisplayOther(true);
+                feedbackElement.textContent = `Raté, retente dans 30s !`;
+                feedbackElement.style.color = "#ff4444";
+                userInputElement.disabled = true;
+                skipWaitButton.style.display = "block";
+                stopLiveTimerOther();
+                if (timeoutId) clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    resetOtherGoal();
+                }, 30000);
+            }
         }
-      }
-    }
+        function finishOtherGoal() {
+            userInputElement.disabled = true;
+            feedbackElement.textContent = `Bravo ! Tu as réussi ${otherGoal} décimales !`;
+            feedbackElement.style.color = "#44ff44";
+            stopLiveTimerOther();
+            otherEndTime = Date.now();
+            const totalSec = (otherEndTime - otherStartTime) / 1000;
+            otherTimeSpan.textContent = totalSec.toFixed(2);
 
-    // Affiche en grand le message pour la tuile 4096
-    function displayBigMessage() {
-      const messageOverlay = document.createElement("div");
-      messageOverlay.style.position = "fixed";
-      messageOverlay.style.top = 0;
-      messageOverlay.style.left = 0;
-      messageOverlay.style.width = "100%";
-      messageOverlay.style.height = "100%";
-      messageOverlay.style.backgroundColor = "rgba(0,0,0,0.8)";
-      messageOverlay.style.color = "#fff";
-      messageOverlay.style.display = "flex";
-      messageOverlay.style.justifyContent = "center";
-      messageOverlay.style.alignItems = "center";
-      messageOverlay.style.fontSize = "2em";
-      messageOverlay.style.zIndex = 9999;
-      messageOverlay.textContent = "Bien joué le GOAT envoie moi sur discord : PatatePourpre";
+            const avg = otherGoal / totalSec;
+            otherAvgSpan.textContent = avg.toFixed(2);
 
-      document.body.appendChild(messageOverlay);
-    }
+            // Stocker un record par objectif
+            const oldRec = recordsTimesByGoal[otherGoal];
+            if (!oldRec || totalSec < oldRec) {
+                recordsTimesByGoal[otherGoal] = totalSec;
+                saveRecords(recordsTimesByGoal);
+            }
+            showRecordForOtherGoal(otherGoal); // Mets à jour l'affichage
 
-    // Bouton "Recommencer" (2048)
-    restart2048Button.addEventListener("click", () => {
-      init2048();
-    });
-
-    // Détection des flèches (2048)
-    document.addEventListener("keydown", (event) => {
-      if (game2048Container.style.display === "block") {
-        switch (event.key) {
-          case "ArrowLeft":
-            move("left");
-            break;
-          case "ArrowRight":
-            move("right");
-            break;
-          case "ArrowUp":
-            move("up");
-            break;
-          case "ArrowDown":
-            move("down");
-            break;
+            otherGoalDone = true;
         }
-      }
-    });
 
-    // Bouton "Jouer à 2048"
-    play2048Button.addEventListener("click", () => {
-      // Masquer la partie entraînement (optionnel)
-      trainingContainer.style.display = "none";
-      // Afficher la div du jeu 2048
-      game2048Container.style.display = "block";
-      init2048();
-    });
-  </script>
+        // Bouton "Continuer sans attendre"
+        skipWaitButton.addEventListener('click', () => {
+            clearTimeout(timeoutId);
+            // Soit c’était 100, soit autre
+            if (!otherGoal) resetGame();
+            else           resetOtherGoal();
+        });
+
+        // Bouton "Choisir un nombre de décimales"
+        chooseDecimalsButton.addEventListener('click', () => {
+            // On ne permet de choisir que si on a déjà fini 100
+            if (!isFirst100Done) {
+                alert("Tu dois d’abord réussir les 100 décimales !");
+                return;
+            }
+            const newGoal = prompt("Choisissez un nombre de décimales (1 à 999) :");
+            if (newGoal && !isNaN(newGoal)) {
+                const val = parseInt(newGoal, 10);
+                if (val < 1 || val > 999) {
+                    alert("Valeur invalide : entre 1 et 999");
+                    return;
+                }
+                // On se met en "mode autre objectif"
+                otherGoal = val;
+                // On prépare l’affichage
+                timerStatsForOther.style.display      = "block";
+                recordOtherContainer.style.display    = "block";
+                otherGoalValueSpan.textContent        = otherGoal;
+                recordOtherGoalSpan.textContent       = otherGoal;
+                showRecordForOtherGoal(val);
+
+                // On "réinitialise" l’entraînement en mode other
+                currentIndex = 0; // On met à 0 => on sort du mode 100
+                otherIndex   = 0;
+                userInputElement.disabled = false;
+                userInputElement.value    = "";
+                feedbackElement.textContent = "";
+                feedbackElement.style.color = "#cccccc";
+
+                timerStatsForOther.scrollIntoView(); // On descend un peu l'écran si besoin
+
+                resetOtherGoal();
+            }
+        });
+
+        function showRecordForOtherGoal(g) {
+            const rec = recordsTimesByGoal[g];
+            if (rec) {
+                recordOtherValueSpan.textContent = rec.toFixed(2);
+            } else {
+                recordOtherValueSpan.textContent = "-";
+            }
+        }
+
+        // Bouton "Refaire 100 décimales"
+        backTo100Button.addEventListener('click', () => {
+            // On repasse en mode 100
+            otherGoal = null; // On annule l’autre
+            timerStatsForOther.style.display   = "none";
+            recordOtherContainer.style.display = "none";
+
+            resetGame();
+            trainingContainer.style.display = "block";
+            game2048Container.style.display = "none";
+
+            chooseDecimalsButton.style.display = isFirst100Done ? "block" : "none";
+            play2048Button.style.display       = isFirst100Done ? "block" : "none";
+            backTo100Button.style.display      = isFirst100Done ? "block" : "none";
+
+            userInputElement.focus();
+        });
+
+        // Jeu 2048 (inchangé)
+        let board = [];
+        const size = 4;
+        function init2048() {
+            board = Array.from({ length: size }, () => Array(size).fill(0));
+            addRandomTile();
+            addRandomTile();
+            render2048();
+        }
+        function addRandomTile() {
+            const emptyTiles = [];
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    if (board[i][j] === 0) {
+                        emptyTiles.push({ x: i, y: j });
+                    }
+                }
+            }
+            if (emptyTiles.length > 0) {
+                const { x, y } = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+                board[x][y] = Math.random() < 0.9 ? 2 : 4;
+            }
+        }
+        function render2048() {
+            game2048Element.innerHTML = "";
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    const tile = document.createElement('div');
+                    tile.className = `tile tile-${board[i][j]}`;
+                    tile.textContent = board[i][j] === 0 ? "" : board[i][j];
+                    game2048Element.appendChild(tile);
+                }
+            }
+        }
+        function move(direction) {
+            let moved = false;
+            if (direction === 'left') {
+                for (let i = 0; i < size; i++) {
+                    for (let j = 0; j < size - 1; j++) {
+                        if (board[i][j] === 0) {
+                            for (let k = j + 1; k < size; k++) {
+                                if (board[i][k] !== 0) {
+                                    board[i][j] = board[i][k];
+                                    board[i][k] = 0;
+                                    moved = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (board[i][j] !== 0) {
+                            for (let k = j + 1; k < size; k++) {
+                                if (board[i][k] === board[i][j]) {
+                                    board[i][j] *= 2;
+                                    board[i][k] = 0;
+                                    moved = true;
+                                    break;
+                                } else if (board[i][k] !== 0) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (direction === 'right') {
+                for (let i = 0; i < size; i++) {
+                    for (let j = size - 1; j > 0; j--) {
+                        if (board[i][j] === 0) {
+                            for (let k = j - 1; k >= 0; k--) {
+                                if (board[i][k] !== 0) {
+                                    board[i][j] = board[i][k];
+                                    board[i][k] = 0;
+                                    moved = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (board[i][j] !== 0) {
+                            for (let k = j - 1; k >= 0; k--) {
+                                if (board[i][k] === board[i][j]) {
+                                    board[i][j] *= 2;
+                                    board[i][k] = 0;
+                                    moved = true;
+                                    break;
+                                } else if (board[i][k] !== 0) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (direction === 'up') {
+                for (let j = 0; j < size; j++) {
+                    for (let i = 0; i < size - 1; i++) {
+                        if (board[i][j] === 0) {
+                            for (let k = i + 1; k < size; k++) {
+                                if (board[k][j] !== 0) {
+                                    board[i][j] = board[k][j];
+                                    board[k][j] = 0;
+                                    moved = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (board[i][j] !== 0) {
+                            for (let k = i + 1; k < size; k++) {
+                                if (board[k][j] === board[i][j]) {
+                                    board[i][j] *= 2;
+                                    board[k][j] = 0;
+                                    moved = true;
+                                    break;
+                                } else if (board[k][j] !== 0) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (direction === 'down') {
+                for (let j = 0; j < size; j++) {
+                    for (let i = size - 1; i > 0; i--) {
+                        if (board[i][j] === 0) {
+                            for (let k = i - 1; k >= 0; k--) {
+                                if (board[k][j] !== 0) {
+                                    board[i][j] = board[k][j];
+                                    board[k][j] = 0;
+                                    moved = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (board[i][j] !== 0) {
+                            for (let k = i - 1; k >= 0; k--) {
+                                if (board[k][j] === board[i][j]) {
+                                    board[i][j] *= 2;
+                                    board[k][j] = 0;
+                                    moved = true;
+                                    break;
+                                } else if (board[k][j] !== 0) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (moved) {
+                addRandomTile();
+                render2048();
+                checkWin();
+            }
+        }
+        function checkWin() {
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    if (board[i][j] === 4096) {
+                        const overlay = document.createElement('div');
+                        overlay.style.position = 'fixed';
+                        overlay.style.top = 0;
+                        overlay.style.left = 0;
+                        overlay.style.width = '100%';
+                        overlay.style.height = '100%';
+                        overlay.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                        overlay.style.color = '#fff';
+                        overlay.style.display = 'flex';
+                        overlay.style.fontSize = '2em';
+                        overlay.style.justifyContent = 'center';
+                        overlay.style.alignItems = 'center';
+                        overlay.style.zIndex = 9999;
+                        overlay.textContent = "Bien joué le GOAT envoie moi sur discord : PatatePourpre";
+                        document.body.appendChild(overlay);
+                        return;
+                    }
+                }
+            }
+        }
+        restart2048Button.addEventListener('click', () => {
+            init2048();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (game2048Container.style.display === "block") {
+                switch (event.key) {
+                    case 'ArrowLeft':  move('left');  break;
+                    case 'ArrowRight': move('right'); break;
+                    case 'ArrowUp':    move('up');    break;
+                    case 'ArrowDown':  move('down');  break;
+                }
+            }
+        });
+        play2048Button.addEventListener('click', () => {
+            trainingContainer.style.display = "none";
+            game2048Container.style.display = "block";
+            init2048();
+        });
+
+        // Initialiser l’affichage
+        updateDisplay();
+    </script>
 </body>
 </html>
