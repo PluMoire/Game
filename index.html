@@ -134,6 +134,16 @@
         .tile-1024 { background-color: #ff3333; }
         .tile-2048 { background-color: #ff0000; }
 
+        /* Texte "P!erre" en bas à droite, très peu visible */
+        #secret-signature {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #fff;
+            font-size: 14px;
+            opacity: 0.05; /* Très faible opacité, quasiment invisible */
+            z-index: 9999;
+        }
     </style>
 </head>
 <body>
@@ -170,6 +180,9 @@
         <button id="restart-2048">Recommencer</button>
     </div>
 
+    <!-- Le petit texte "P!erre" en bas à droite, presque invisible -->
+    <div id="secret-signature">P!erre</div>
+
     <script>
         // Les décimales de π (999 premières décimales)
         const piDecimals = "1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679" +
@@ -198,7 +211,7 @@
         let encouragementIntervalId = null;
         let playerName = "";
 
-        // Départ à 100 décimales par défaut (comme demandé)
+        // Départ à 100 décimales
         let maxDecimals = 100;
 
         const nameInputContainer = document.getElementById('name-input-container');
@@ -282,27 +295,30 @@
                     recordElement.textContent = record;
                 }
 
+                // Si on a atteint le nombre de décimales visé
                 if (currentIndex >= maxDecimals) {
                     feedbackElement.textContent = `Félicitations, ${playerName} ! Tu as mémorisé ${maxDecimals} décimales de π ! 🎉`;
                     userInputElement.disabled = true;
                     clearInterval(encouragementIntervalId);
                     encouragementElement.textContent = `Tu es un véritable génie de π, ${playerName} ! 🌟`;
 
-                    // Si on vient de finir les 100 premières décimales :
+                    // Spécifiquement pour les 100 premières décimales
                     if (maxDecimals === 100) {
-                        // Afficher les 2 boutons
+                        // Afficher les 2 boutons : choisir nouveau nb de décimales + accès 2048
                         chooseDecimalsButton.style.display = "block";
                         play2048Button.style.display = "block";
                     } else {
-                        // Si on vient de finir un autre nombre de décimales (101-999),
-                        // on n'affiche que le bouton pour choisir un nouveau nombre.
+                        // Si on a fini un autre nombre de décimales (101-999)
                         chooseDecimalsButton.style.display = "block";
                     }
 
-                } else {
-                    feedbackElement.textContent = "Correct!";
-                    feedbackElement.style.color = "#44ff44"; // Vert
-                }
+                    // On peut stopper la vérification ici
+                    return;
+                } 
+                
+                // Si on n'a pas encore fini, feedback correct
+                feedbackElement.textContent = "Correct!";
+                feedbackElement.style.color = "#44ff44"; // Vert
             } else {
                 // Mauvaise décimale
                 updateDisplay(true);
@@ -377,7 +393,6 @@
         //
         // ========== LOGIQUE DU JEU 2048 ==========
         //
-
         let board = [];
         const size = 4;
 
@@ -538,7 +553,6 @@
         function checkWin() {
             for (let i = 0; i < size; i++) {
                 for (let j = 0; j < size; j++) {
-                    // Une fois que le joueur atteint 4096, on affiche le message
                     if (board[i][j] === 4096) {
                         displayBigMessage();
                         return;
@@ -547,7 +561,7 @@
             }
         }
 
-        // Affiche en grand le message pour le 4096
+        // Affiche en grand le message pour la tuile 4096
         function displayBigMessage() {
             const messageOverlay = document.createElement('div');
             messageOverlay.style.position = 'fixed';
@@ -567,10 +581,12 @@
             document.body.appendChild(messageOverlay);
         }
 
+        // Bouton "Recommencer"
         restart2048Button.addEventListener('click', () => {
             init2048();
         });
 
+        // Détection des flèches pour jouer
         document.addEventListener('keydown', (event) => {
             if (game2048Container.style.display === "block") {
                 switch (event.key) {
@@ -592,9 +608,9 @@
 
         // Bouton "Jouer à 2048"
         play2048Button.addEventListener('click', () => {
-            // On masque la partie entraînement (optionnel)
+            // Masquer la partie entraînement (optionnel)
             trainingContainer.style.display = "none";
-            // On affiche la partie 2048
+            // Afficher la div du jeu 2048
             game2048Container.style.display = "block";
             init2048();
         });
