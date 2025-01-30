@@ -83,9 +83,13 @@
             margin-top: 20px;
             color: #cccccc; /* Gris clair */
         }
-        #skip-wait {
-            display: none;
+        .button-container {
+            display: flex;
+            justify-content: center; /* Centre le bouton horizontalement */
             margin-top: 20px;
+        }
+        #skip-wait {
+            display: none; /* Caché par défaut */
         }
         .correct {
             color: #44ff44; /* Vert */
@@ -114,7 +118,9 @@
             <p>Décimales tapées : <span id="decimal-count">0</span></p>
             <p>Record : <span id="record">0</span></p>
         </div>
-        <button id="skip-wait">Continuer sans attendre</button>
+        <div class="button-container">
+            <button id="skip-wait">Continuer sans attendre</button>
+        </div>
     </div>
 
     <script>
