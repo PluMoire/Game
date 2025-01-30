@@ -87,11 +87,12 @@
         }
         .button-container {
             display: flex;
-            justify-content: center; /* Centre le bouton horizontalement */
+            justify-content: center; /* Centre le(s) bouton(s) horizontalement */
             margin-top: 20px;
+            gap: 10px;
         }
-        #skip-wait, #choose-decimals {
-            display: none; /* Caché par défaut */
+        #skip-wait, #choose-decimals, #play-2048 {
+            display: none; /* Cachés par défaut */
         }
         .correct {
             color: #44ff44; /* Vert */
@@ -120,17 +121,19 @@
             font-weight: bold;
             color: #ffffff;
         }
-        .tile-2 { background-color: #ff4444; }
-        .tile-4 { background-color: #ff7777; }
-        .tile-8 { background-color: #ffaaaa; }
+        /* Couleurs des tuiles en fonction de leur valeur */
+        .tile-2  { background-color: #ff4444; }
+        .tile-4  { background-color: #ff7777; }
+        .tile-8  { background-color: #ffaaaa; }
         .tile-16 { background-color: #ffdddd; }
         .tile-32 { background-color: #ffcccc; }
         .tile-64 { background-color: #ffbbbb; }
-        .tile-128 { background-color: #ff9999; }
-        .tile-256 { background-color: #ff6666; }
-        .tile-512 { background-color: #ff5555; }
+        .tile-128  { background-color: #ff9999; }
+        .tile-256  { background-color: #ff6666; }
+        .tile-512  { background-color: #ff5555; }
         .tile-1024 { background-color: #ff3333; }
         .tile-2048 { background-color: #ff0000; }
+
     </style>
 </head>
 <body>
@@ -157,6 +160,7 @@
         </div>
         <div class="button-container">
             <button id="choose-decimals">Choisir un nombre de décimales</button>
+            <button id="play-2048">Jouer à 2048</button>
         </div>
     </div>
 
@@ -193,7 +197,9 @@
         let timeoutId = null;
         let encouragementIntervalId = null;
         let playerName = "";
-        let maxDecimals = 100; // Nombre de décimales à mémoriser (100 par défaut)
+
+        // Départ à 100 décimales par défaut (comme demandé)
+        let maxDecimals = 100;
 
         const nameInputContainer = document.getElementById('name-input-container');
         const trainingContainer = document.getElementById('training-container');
@@ -207,6 +213,7 @@
         const recordElement = document.getElementById('record');
         const skipWaitButton = document.getElementById('skip-wait');
         const chooseDecimalsButton = document.getElementById('choose-decimals');
+        const play2048Button = document.getElementById('play-2048');
         const nameInput = document.getElementById('name-input');
         const startButton = document.getElementById('start-button');
         const game2048Element = document.getElementById('game-2048');
@@ -237,7 +244,8 @@
             encouragementElement.textContent = message;
         }
 
-        // Met à jour l'affichage des décimales avec des retours à la ligne toutes les 10 décimales
+        // Met à jour l'affichage des décimales
+        // showAll = true pour afficher en rouge les décimales restantes
         function updateDisplay(showAll = false) {
             let displayText = "3."; // Commence avec "3."
             for (let i = 0; i < maxDecimals; i++) {
@@ -245,7 +253,7 @@
                     // Décimales correctes en vert
                     displayText += `<span class="correct">${piDecimals[i]}</span>`;
                 } else if (showAll) {
-                    // Afficher les décimales non trouvées en rouge pendant 30 secondes
+                    // Décimales non trouvées en rouge
                     displayText += `<span class="incorrect">${piDecimals[i]}</span>`;
                 }
                 // Retour à la ligne toutes les 10 décimales
@@ -270,7 +278,7 @@
                 // Mettre à jour le record si nécessaire
                 if (currentIndex > record) {
                     record = currentIndex;
-                    localStorage.setItem('piRecord', record); // Sauvegarder le record dans le localStorage
+                    localStorage.setItem('piRecord', record);
                     recordElement.textContent = record;
                 }
 
@@ -279,22 +287,30 @@
                     userInputElement.disabled = true;
                     clearInterval(encouragementIntervalId);
                     encouragementElement.textContent = `Tu es un véritable génie de π, ${playerName} ! 🌟`;
-                    chooseDecimalsButton.style.display = "block"; // Afficher le bouton pour choisir un nouveau nombre de décimales
-                    game2048Container.style.display = "block"; // Afficher le jeu 2048
-                    init2048(); // Initialiser le jeu 2048
+
+                    // Si on vient de finir les 100 premières décimales :
+                    if (maxDecimals === 100) {
+                        // Afficher les 2 boutons
+                        chooseDecimalsButton.style.display = "block";
+                        play2048Button.style.display = "block";
+                    } else {
+                        // Si on vient de finir un autre nombre de décimales (101-999),
+                        // on n'affiche que le bouton pour choisir un nouveau nombre.
+                        chooseDecimalsButton.style.display = "block";
+                    }
+
                 } else {
                     feedbackElement.textContent = "Correct!";
                     feedbackElement.style.color = "#44ff44"; // Vert
                 }
             } else {
-                // Afficher toutes les décimales non trouvées en rouge pendant 30 secondes
+                // Mauvaise décimale
                 updateDisplay(true);
                 feedbackElement.textContent = `Nulll, T'es nul ${playerName} !!! 😭`;
                 feedbackElement.style.color = "#ff4444"; // Rouge
 
                 // Désactiver l'entrée pendant 30 secondes
                 userInputElement.disabled = true;
-
                 // Afficher le bouton pour sauter l'attente
                 skipWaitButton.style.display = "block";
 
@@ -306,7 +322,7 @@
             }
         }
 
-        // Réinitialiser le jeu
+        // Réinitialiser le jeu de décimales
         function resetGame() {
             currentIndex = 0;
             userInputElement.value = "";
@@ -314,23 +330,26 @@
             updateDisplay();
             feedbackElement.textContent = `Recommence depuis le début, ${playerName} !`;
             feedbackElement.style.color = "#cccccc"; // Gris clair
-            decimalCountElement.textContent = 0; // Réinitialiser le compteur de décimales
-            skipWaitButton.style.display = "none"; // Cacher le bouton
+            decimalCountElement.textContent = 0;
+            skipWaitButton.style.display = "none";
         }
 
-        // Événement pour le bouton "Continuer sans attendre"
+        // Bouton "Continuer sans attendre"
         skipWaitButton.addEventListener('click', () => {
-            clearTimeout(timeoutId); // Annuler le délai de 30 secondes
-            resetGame(); // Réinitialiser le jeu immédiatement
+            clearTimeout(timeoutId);
+            resetGame();
         });
 
-        // Événement pour le bouton "Choisir un nombre de décimales"
+        // Bouton "Choisir un nombre de décimales"
         chooseDecimalsButton.addEventListener('click', () => {
             const newMaxDecimals = prompt("Choisissez un nombre de décimales à mémoriser (entre 101 et 999) :");
             if (newMaxDecimals && !isNaN(newMaxDecimals) && newMaxDecimals >= 101 && newMaxDecimals <= 999) {
                 maxDecimals = parseInt(newMaxDecimals, 10);
-                resetGame(); // Réinitialiser le jeu avec le nouveau nombre de décimales
-                chooseDecimalsButton.style.display = "none"; // Cacher le bouton après la sélection
+                resetGame();
+                // Cacher les boutons après le choix
+                chooseDecimalsButton.style.display = "none";
+                play2048Button.style.display = "none";
+                userInputElement.focus();
             } else {
                 alert("Veuillez entrer un nombre valide entre 101 et 999.");
             }
@@ -340,12 +359,12 @@
         startButton.addEventListener('click', () => {
             playerName = nameInput.value.trim();
             if (playerName) {
-                nameInputContainer.style.display = "none"; // Cacher la saisie du prénom
-                trainingContainer.style.display = "block"; // Afficher l'entraînement
-                playerNameElement.textContent = playerName; // Afficher le prénom dans le titre
-                userInputElement.focus(); // Mettre le focus sur le champ de saisie
-                encouragementIntervalId = setInterval(showRandomEncouragement, 10000); // Changer le message d'encouragement toutes les 10 secondes
-                showRandomEncouragement(); // Afficher un premier message d'encouragement
+                nameInputContainer.style.display = "none";
+                trainingContainer.style.display = "block";
+                playerNameElement.textContent = playerName;
+                userInputElement.focus();
+                encouragementIntervalId = setInterval(showRandomEncouragement, 10000);
+                showRandomEncouragement(); // Premier message
             } else {
                 alert("Veuillez entrer votre prénom pour commencer !");
             }
@@ -353,9 +372,12 @@
 
         // Initialisation
         userInputElement.addEventListener('input', checkInput);
-        updateDisplay(); // Initialiser l'affichage
+        updateDisplay();
 
-        // Jeu 2048
+        //
+        // ========== LOGIQUE DU JEU 2048 ==========
+        //
+
         let board = [];
         const size = 4;
 
@@ -393,6 +415,7 @@
             }
         }
 
+        // Fonction pour déplacer les tuiles
         function move(direction) {
             let moved = false;
             if (direction === 'left') {
@@ -511,15 +534,37 @@
             }
         }
 
+        // Vérifie si on a atteint la tuile 4096
         function checkWin() {
             for (let i = 0; i < size; i++) {
                 for (let j = 0; j < size; j++) {
-                    if (board[i][j] === 2048) {
-                        alert("Félicitations, vous avez gagné !");
+                    // Une fois que le joueur atteint 4096, on affiche le message
+                    if (board[i][j] === 4096) {
+                        displayBigMessage();
                         return;
                     }
                 }
             }
+        }
+
+        // Affiche en grand le message pour le 4096
+        function displayBigMessage() {
+            const messageOverlay = document.createElement('div');
+            messageOverlay.style.position = 'fixed';
+            messageOverlay.style.top = 0;
+            messageOverlay.style.left = 0;
+            messageOverlay.style.width = '100%';
+            messageOverlay.style.height = '100%';
+            messageOverlay.style.backgroundColor = 'rgba(0,0,0,0.8)';
+            messageOverlay.style.color = '#fff';
+            messageOverlay.style.display = 'flex';
+            messageOverlay.style.justifyContent = 'center';
+            messageOverlay.style.alignItems = 'center';
+            messageOverlay.style.fontSize = '2em';
+            messageOverlay.style.zIndex = 9999;
+            messageOverlay.textContent = "Bien joué le GOAT envoie moi sur discord : PatatePourpre";
+
+            document.body.appendChild(messageOverlay);
         }
 
         restart2048Button.addEventListener('click', () => {
@@ -543,6 +588,15 @@
                         break;
                 }
             }
+        });
+
+        // Bouton "Jouer à 2048"
+        play2048Button.addEventListener('click', () => {
+            // On masque la partie entraînement (optionnel)
+            trainingContainer.style.display = "none";
+            // On affiche la partie 2048
+            game2048Container.style.display = "block";
+            init2048();
         });
     </script>
 
