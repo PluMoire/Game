@@ -6,75 +6,92 @@
     <title>Entraînement à la mémorisation de π</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
-            margin-top: 50px;
-            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a; /* Fond noir */
+            color: #ffffff; /* Texte blanc */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #name-input-container, #training-container {
+            background-color: #262626; /* Fond gris foncé */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); /* Ombre rouge */
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 2.5em;
+            color: #ff4444; /* Rouge vif */
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+            color: #cccccc; /* Gris clair */
+        }
+        input[type="text"] {
+            font-size: 1.2em;
+            padding: 10px;
+            width: 80%;
+            margin: 10px 0;
+            border: 2px solid #ff4444; /* Bordure rouge */
+            border-radius: 5px;
+            background-color: #333333; /* Fond gris */
+            color: #ffffff; /* Texte blanc */
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff7777; /* Bordure rouge clair */
+        }
+        button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            background-color: #ff4444; /* Rouge vif */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #ff7777; /* Rouge clair */
         }
         #pi-digits {
             font-size: 2em;
             margin-bottom: 20px;
             white-space: pre-wrap;
-        }
-        #user-input {
-            font-size: 1.5em;
-            padding: 10px;
-            width: 300px;
-            margin-bottom: 20px;
+            color: #ff4444; /* Rouge vif */
         }
         #feedback {
             font-size: 1.2em;
             margin-top: 20px;
-            color: #333;
+            color: #ff4444; /* Rouge vif */
         }
         #encouragement {
             font-size: 1.5em;
             margin-top: 20px;
-            color: #555;
+            color: #ff7777; /* Rouge clair */
             font-style: italic;
         }
         #stats {
             font-size: 1.2em;
             margin-top: 20px;
+            color: #cccccc; /* Gris clair */
         }
         #skip-wait {
-            font-size: 1em;
-            padding: 10px 20px;
+            display: none;
             margin-top: 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #skip-wait:hover {
-            background-color: #45a049;
-        }
-        #name-input-container {
-            margin-bottom: 20px;
-        }
-        #name-input {
-            font-size: 1.2em;
-            padding: 10px;
-            width: 200px;
-        }
-        #start-button {
-            font-size: 1.2em;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #start-button:hover {
-            background-color: #45a049;
         }
         .correct {
-            color: green;
+            color: #44ff44; /* Vert */
         }
         .incorrect {
-            color: red;
+            color: #ff4444; /* Rouge */
         }
     </style>
 </head>
@@ -97,7 +114,7 @@
             <p>Décimales tapées : <span id="decimal-count">0</span></p>
             <p>Record : <span id="record">0</span></p>
         </div>
-        <button id="skip-wait" style="display: none;">Continuer sans attendre</button>
+        <button id="skip-wait">Continuer sans attendre</button>
     </div>
 
     <script>
@@ -190,13 +207,13 @@
                     encouragementElement.textContent = `Tu es un véritable génie de π, ${playerName} ! 🌟`;
                 } else {
                     feedbackElement.textContent = "Correct!";
-                    feedbackElement.style.color = "green";
+                    feedbackElement.style.color = "#44ff44"; // Vert
                 }
             } else {
                 // Afficher toutes les décimales non trouvées en rouge pendant 30 secondes
                 updateDisplay(true);
                 feedbackElement.textContent = `Nulll, T'es nul ${playerName} !!! 😭`;
-                feedbackElement.style.color = "red";
+                feedbackElement.style.color = "#ff4444"; // Rouge
 
                 // Désactiver l'entrée pendant 30 secondes
                 userInputElement.disabled = true;
@@ -219,7 +236,7 @@
             userInputElement.disabled = false;
             updateDisplay();
             feedbackElement.textContent = `Recommence depuis le début, ${playerName} !`;
-            feedbackElement.style.color = "black";
+            feedbackElement.style.color = "#cccccc"; // Gris clair
             decimalCountElement.textContent = 0; // Réinitialiser le compteur de décimales
             skipWaitButton.style.display = "none"; // Cacher le bouton
         }
