@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entraînement à la mémorisation de π - Sofiane</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            background-color: #f0f0f0;
+        }
+        #pi-digits {
+            font-size: 2em;
+            margin-bottom: 20px;
+            white-space: pre-wrap; /* Permet les retours à la ligne */
+        }
+        #user-input {
+            font-size: 1.5em;
+            padding: 10px;
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        #feedback {
+            font-size: 1.2em;
+            margin-top: 20px;
+            color: #333;
+        }
+        #encouragement {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #555;
+            font-style: italic;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Entraînement à la mémorisation de π - Sofiane</h1>
+    <div id="pi-digits">3.</div>
+    <input type="text" id="user-input" placeholder="Entrez la prochaine décimale..." autofocus>
+    <div id="feedback"></div>
+    <div id="encouragement"></div>
+
+    <script>
+        // Les décimales de π (100 premières décimales)
+        const piDecimals = "1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
+        let currentIndex = 0;
+        let timeoutId = null;
+        let encouragementIntervalId = null;
+
+        const piDigitsElement = document.getElementById('pi-digits');
+        const userInputElement = document.getElementById('user-input');
+        const feedbackElement = document.getElementById('feedback');
+        const encouragementElement = document.getElementById('encouragement');
+
+        // Messages d'encouragement pour Sofiane
+        const encouragements = [
+            "Allez Sofiane, tu peux le faire ! 💪",
+            "Continue comme ça, champion ! 🏆",
+            "Tu es incroyable, Sofiane ! 😎",
+            "Ne lâche rien, tu es sur la bonne voie ! 🔥",
+            "Sofiane, tu es une machine à retenir π ! 🤖",
+            "C'est impressionnant, continue ! 🚀",
+            "Tu es en train de battre des records, Sofiane ! 🏅",
+            "Personne ne retient π comme toi, Sofiane ! 🎯",
+            "Tu es un génie, Sofiane ! 🧠",
+            "On dirait que π n'a plus de secrets pour toi ! 🔍"
+        ];
+
+        // Affiche un message d'encouragement aléatoire toutes les 10 secondes
+        function showRandomEncouragement() {
+            const randomIndex = Math.floor(Math.random() * encouragements.length);
+            encouragementElement.textContent = encouragements[randomIndex];
+        }
+
+        // Met à jour l'affichage des décimales avec des retours à la ligne toutes les 10 décimales
+        function updateDisplay(showAll = false) {
+            let displayText = "3."; // Commence avec "3."
+            for (let i = 0; i < piDecimals.length; i++) {
+                if (i < currentIndex) {
+                    // Décimales correctes en vert
+                    displayText += `<span class="correct">${piDecimals[i]}</span>`;
+                } else if (showAll) {
+                    // Afficher les décimales non trouvées en rouge pendant 10 secondes
+                    displayText += `<span class="incorrect">${piDecimals[i]}</span>`;
+                }
+                // Retour à la ligne toutes les 10 décimales
+                if ((i + 1) % 10 === 0 && i !== piDecimals.length - 1) {
+                    displayText += "\n";
+                }
+            }
+            piDigitsElement.innerHTML = displayText;
+        }
+
+        // Vérifie la saisie de l'utilisateur
+        function checkInput() {
+            const userInput = userInputElement.value;
+            const correctDecimal = piDecimals[currentIndex];
+
+            if (userInput === correctDecimal) {
+                currentIndex++;
+                userInputElement.value = "";
+                updateDisplay();
+                if (currentIndex >= piDecimals.length) {
+                    feedbackElement.textContent = "Félicitations, Sofiane ! Tu as mémorisé toutes les décimales de π ! 🎉";
+                    userInputElement.disabled = true;
+                    clearInterval(encouragementIntervalId);
+                    encouragementElement.textContent = "Tu es un véritable génie de π ! 🌟";
+                } else {
+                    feedbackElement.textContent = "Correct!";
+                    feedbackElement.style.color = "green";
+                }
+            } else {
+                // Afficher toutes les décimales non trouvées en rouge pendant 10 secondes
+                updateDisplay(true);
+                feedbackElement.textContent = "Nulll, T'es nul Sofiane !!! 😭";
+                feedbackElement.style.color = "red";
+
+                // Désactiver l'entrée pendant 10 secondes
+                userInputElement.disabled = true;
+
+                // Réinitialiser après 10 secondes
+                if (timeoutId) clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    currentIndex = 0;
+                    userInputElement.value = "";
+                    userInputElement.disabled = false;
+                    updateDisplay();
+                    feedbackElement.textContent = "Recommence depuis le début, Sofiane !";
+                    feedbackElement.style.color = "black";
+                }, 10000); // 10 secondes
+            }
+        }
+
+        // Initialisation
+        userInputElement.addEventListener('input', checkInput);
+        updateDisplay(); // Initialiser l'affichage
+        encouragementIntervalId = setInterval(showRandomEncouragement, 10000); // Changer le message d'encouragement toutes les 10 secondes
+        showRandomEncouragement(); // Afficher un premier message d'encouragement
+    </script>
+
+</body>
+</html>
