@@ -14,7 +14,7 @@
         #pi-digits {
             font-size: 2em;
             margin-bottom: 20px;
-            white-space: pre-wrap; /* Permet les retours à la ligne */
+            white-space: pre-wrap;
         }
         #user-input {
             font-size: 1.5em;
@@ -37,6 +37,19 @@
             font-size: 1.2em;
             margin-top: 20px;
         }
+        #skip-wait {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #skip-wait:hover {
+            background-color: #45a049;
+        }
         .correct {
             color: green;
         }
@@ -56,6 +69,7 @@
         <p>Décimales tapées : <span id="decimal-count">0</span></p>
         <p>Record : <span id="record">0</span></p>
     </div>
+    <button id="skip-wait" style="display: none;">Continuer sans attendre</button>
 
     <script>
         // Les décimales de π (100 premières décimales)
@@ -70,6 +84,7 @@
         const encouragementElement = document.getElementById('encouragement');
         const decimalCountElement = document.getElementById('decimal-count');
         const recordElement = document.getElementById('record');
+        const skipWaitButton = document.getElementById('skip-wait');
 
         // Messages d'encouragement pour Sofiane
         const encouragements = [
@@ -150,19 +165,34 @@
                 // Désactiver l'entrée pendant 10 secondes
                 userInputElement.disabled = true;
 
+                // Afficher le bouton pour sauter l'attente
+                skipWaitButton.style.display = "block";
+
                 // Réinitialiser après 10 secondes
                 if (timeoutId) clearTimeout(timeoutId);
                 timeoutId = setTimeout(() => {
-                    currentIndex = 0;
-                    userInputElement.value = "";
-                    userInputElement.disabled = false;
-                    updateDisplay();
-                    feedbackElement.textContent = "Recommence depuis le début, Sofiane !";
-                    feedbackElement.style.color = "black";
-                    decimalCountElement.textContent = 0; // Réinitialiser le compteur de décimales
+                    resetGame();
                 }, 10000); // 10 secondes
             }
         }
+
+        // Réinitialiser le jeu
+        function resetGame() {
+            currentIndex = 0;
+            userInputElement.value = "";
+            userInputElement.disabled = false;
+            updateDisplay();
+            feedbackElement.textContent = "Recommence depuis le début, Sofiane !";
+            feedbackElement.style.color = "black";
+            decimalCountElement.textContent = 0; // Réinitialiser le compteur de décimales
+            skipWaitButton.style.display = "none"; // Cacher le bouton
+        }
+
+        // Événement pour le bouton "Continuer sans attendre"
+        skipWaitButton.addEventListener('click', () => {
+            clearTimeout(timeoutId); // Annuler le délai de 10 secondes
+            resetGame(); // Réinitialiser le jeu immédiatement
+        });
 
         // Initialisation
         userInputElement.addEventListener('input', checkInput);
